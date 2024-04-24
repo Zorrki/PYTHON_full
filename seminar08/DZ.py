@@ -43,7 +43,7 @@ def open_phonebook():
     for row in data_lines:
         for i, item in enumerate(row):
             print(f"{item:<{column_widths[i]}}", end="\t")
-        print()  # Переход на новую строку после печати строки данных
+        print()
 
 def find_contact():
     header = ["Фамилия", "Имя", "Отчество", "Телефон"]
@@ -80,7 +80,6 @@ def delete_contact():
     baza.pop(del_cont)
     with open('phonebook.txt', 'w', encoding='utf-8') as data:
         for str1 in baza:
-            # Записываем контакт в файл без завершающего символа новой строки, если это последний контакт
             if str1 == baza[-1]:
                 data.write(str1[1].rstrip('\n'))
             else:
