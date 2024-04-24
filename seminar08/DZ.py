@@ -1,8 +1,8 @@
 def main():
     isStop = 10
     while isStop != 0:
-        print(f'1. Добавить контакт. \n2. Открыть телефонную книгу. \n3. Найти контакт. \n4. Копировать контакт. \n5. Удалить контакт \n0. Выход')
-        isStop = int(input('Введите номер нужной операции: '))
+        print(f'1. Добавление нового контакта \n2. Открыть телефонную книгу \n3. Поиск контакта \n4. Копирование контакта \n5. Удаление контакта \n0. Выход')
+        isStop = int(input('Номер операции: '))
         if isStop == 0:
             return False
         elif isStop == 1:
@@ -16,14 +16,14 @@ def main():
         elif isStop == 5:
             delete_contact()
         elif isStop not in [0,5]:
-            print('Обратите внимание на номера элементов меню!')
-        input('Нажмите Enter для продолжения ')
+            print('ОШИБКА! Укажите корректный номер операции!')
+        input('\nДля продолжения нажмите клавишу Enter...')
     
 def add_contact():
-    s_name = input('Введите фамилию: ')
-    name = input('Введите имя: ')
-    m_name = input('Введите отчество: ')
-    phone = input('Введите номер телефона: ')
+    s_name = input('Фамилия: ')
+    name = input('Имя: ')
+    m_name = input('Отчество: ')
+    phone = input('Телефон: ')
     contact = {'Фамилия': s_name, 'Имя': name, 'Отчество': m_name, 'Телефон': phone}
     with open('phonebook.txt', 'a', encoding='utf-8') as data:
         for value in contact.values():
@@ -32,13 +32,22 @@ def add_contact():
 
 def open_phonebook():
     header = ["Фамилия", "Имя", "Отчество", "Номер телефона"]
+    data_lines = []
     with open('phonebook.txt', 'r', encoding='utf-8') as data:
-        print("\t".join(header))
-        print(*data.readlines())
+        for line in data:
+            data_lines.append(line.strip().split())
+    column_widths = [max(len(str(row[i])) for row in data_lines) for i in range(len(header))]
+    for i, head in enumerate(header):
+        print(f"{head:<{column_widths[i]}}", end="\t")
+    print()
+    for row in data_lines:
+        for i, item in enumerate(row):
+            print(f"{item:<{column_widths[i]}}", end="\t")
+        print()  # Переход на новую строку после печати строки данных
 
 def find_contact():
-    header = ["Фамилия", "Имя", "Отчество", "Номер телефона"]
-    desired = input('Кого ищем? ')
+    header = ["Фамилия", "Имя", "Отчество", "Телефон"]
+    desired = input('Укажите данные для поиска контака: ')
     with open('phonebook.txt', 'r', encoding='utf-8') as data:
         print("\t".join(header))
         for value in data.readlines():
@@ -46,7 +55,7 @@ def find_contact():
                 print(*value)
             
 def copy_contact():
-    header = ["Фамилия", "Имя", "Отчество", "Номер телефона"]
+    header = ["Фамилия", "Имя", "Отчество", "Телефон"]
     with open('phonebook.txt', 'r', encoding='utf-8') as data:
         print("\t".join(header))
         baza = list(enumerate(data.readlines()))
@@ -61,9 +70,9 @@ def copy_contact():
                 data.write('\n')
 
 def delete_contact():
-    header = ["Фамилия", "Имя", "Отчество", "Номер телефона"]
+    header = ["Фамилия", "Имя", "Отчество", "Телефон"]
     baza = []
-    with open('phonebook.txt', 'r+', encoding='utf-8') as data:
+    with open('phonebook.txt', 'r', encoding='utf-8') as data:
         print("\t".join(header))
         baza = list(enumerate(data.readlines()))
         print(*baza, sep='\n')
@@ -71,8 +80,11 @@ def delete_contact():
     baza.pop(del_cont)
     with open('phonebook.txt', 'w', encoding='utf-8') as data:
         for str1 in baza:
-            data.write(str1[1])
+            # Записываем контакт в файл без завершающего символа новой строки, если это последний контакт
+            if str1 == baza[-1]:
+                data.write(str1[1].rstrip('\n'))
+            else:
+                data.write(str1[1])
         data.write('\n')
-
 
 main()
